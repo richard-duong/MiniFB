@@ -10,8 +10,8 @@ topology enables one to pass in '--topo=mytopo' from the command line.
 
 from mininet.topo import Topo
 
-class MyTopo( Topo ):
-    print("Simple topology example.")
+class FinalTopol( Topo ):
+    print("Final topology network.")
 
     def __init__( self ):
         print("Create custom topo.")
@@ -34,4 +34,4 @@ class MyTopo( Topo ):
         self.addLink( leftSwitch, rightSwitch )
         self.addLink( rightSwitch, rightHost )
 
-topos = { 'mytopo': ( lambda: MyTopo() ) }
+topos = { 'finaltopol': ( lambda: FinalTopol() ) }
