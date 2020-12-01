@@ -1,7 +1,7 @@
 import socket
 import sys
 from thread import *
-import getpass
+from getpass import getpass
 import os
 
 '''
@@ -68,6 +68,10 @@ Enter Username and Passwd
 # get username from input. HINT: raw_input(); get passwd from input. HINT: getpass()
 
 # Send username && passwd to server
+usr = raw_input("Enter your username: ")
+pwd = getpass("Enter your password: ")
+
+
 
 '''
 TODO: Part-1.3: User should log in successfully if username and password are entered correctly. A set of username/password pairs are hardcoded on the server side. 
@@ -82,7 +86,9 @@ if reply == 'xxx': # TODO: use the correct string to replace xxx here!
 	while True :
 
 		# TODO: Part-1.4: User should be provided with a menu. Complete the missing options in the menu!
+			
 		message = raw_input("Choose an option (type the number): \n 1. Logout \n 2. Post a message \n")
+		
 		
 		try :
 			# TODO: Send the selected option to the server
