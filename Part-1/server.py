@@ -14,13 +14,13 @@ def tupleToString(t):
 
 def stringToTuple(s):
 	t = s.split("<>")
-	return t
+	return tuple(t)
 
 '''
 Create Socket
 '''
 HOST = ''	# Symbolic name meaning all available interfaces
-PORT = 9486	# Arbitrary non-privileged port
+PORT = 9999	# Arbitrary non-privileged port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 print 'Socket created'
@@ -49,6 +49,8 @@ message queue for each user
 clients = []
 # TODO: Part-1 : create a var to store username && password. NOTE: A set of username/password pairs are hardcoded here. 
 # e.g. userpass = [......]
+
+userpass = [('Richard', 'pw'), ('Duong', 'pw')]
 messages = [[],[],[]]
 count = 0
 
@@ -59,12 +61,11 @@ def clientThread(conn):
 	global clients
 	global count
 	# Tips: Sending message to connected client
-	conn.send('Welcome to the server. Type something and hit enter\n') #send only takes string
-	rcv_msg = conn.recv(1024)
-	rcv_msg = stringToTuple(rcv_msg)
+	cred = conn.recv(1024)
+	rcv_msg = stringToTuple(cred)
+	
 	if rcv_msg in userpass:
 		user = userpass.index(rcv_msg)
-		
 		try :
 			conn.sendall('valid')
 		except socket.error:
@@ -77,11 +78,41 @@ def clientThread(conn):
 				option = conn.recv(1024)
 			except:
 				break
+
 			if option == str(1):
-				print 'user logout'
-				# TODO: Part-1: Add the logout processing here	
+				print 'User Logout'
+				conn.close()
+
 			elif option == str(2):
-				print 'Post a message'
+				rcv_msg = conn.recv(1024)
+				print 'Message received from client ' +  rcv_msg[1] + ' is: ' + rcv_msg 
+
+			elif option == str(3):
+				print 'Change password'
+				rcv_msg = conn.recv(1024)
+				rcv_msg = stringToTuple(rcv_msg)
+
+				if userpass[user][1] == rcv_msg[0]:
+					print "old user pass: " + str(userpass[user])
+					userpass[user] = (userpass[user][0], rcv_msg[1])
+					print "new user pass: " + str(userpass[user])
+					print "Updated login info for " + userpass[user][0]
+
+					try:
+						conn.sendall('test')
+						conn.sendall('valid')
+					except socket.error:
+						print 'valid Send failed'
+					print "Sent confirmation to client"
+			
+				else:
+					print "Failed to update login info for " + userpass[user][0]
+					try:
+						conn.sendall('nalid')
+					except socket.error:
+						print 'nalid Send failed'
+
+			
 			else:
 				try :
 					conn.sendall('Option not valid')
@@ -131,4 +162,3 @@ while 1:
 		subscriptions.append([])
 		print 'User created'
 s.close()
-

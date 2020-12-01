@@ -44,8 +44,8 @@ print 'Socket Created'
 '''
 Resolve Hostname
 '''
-host = '10.0.0.4'
-port = 9486
+host = '10.0.2.15'
+port = 9999
 try:
 	remote_ip = socket.gethostbyname(host)
 except socket.gaierror:
@@ -58,6 +58,7 @@ Connect to remote server
 '''
 s.connect((remote_ip , port))
 print 'Socket Connected to ' + host + ' on ip ' + remote_ip
+print ''
 
 '''
 TODO: Part-1.1, 1.2: 
@@ -70,14 +71,14 @@ Enter Username and Passwd
 # Send username && passwd to server
 usr = raw_input("Enter your username: ")
 pwd = getpass("Enter your password: ")
-
+s.sendall(usr + '<>' + pwd)
 
 
 '''
 TODO: Part-1.3: User should log in successfully if username and password are entered correctly. A set of username/password pairs are hardcoded on the server side. 
 '''
 reply = s.recv(5)
-if reply == 'xxx': # TODO: use the correct string to replace xxx here!
+if reply == 'valid': # TODO: use the correct string to replace xxx here!
 
 	# Start the receiving thread
 	start_new_thread(receiveThread ,(s,))
@@ -87,18 +88,44 @@ if reply == 'xxx': # TODO: use the correct string to replace xxx here!
 
 		# TODO: Part-1.4: User should be provided with a menu. Complete the missing options in the menu!
 			
-		message = raw_input("Choose an option (type the number): \n 1. Logout \n 2. Post a message \n")
-		
+		message = raw_input("\n\nChoose an option (type the number): \n 1. Logout \n 2. Post a message \n 3. Change Password \n")	
 		
 		try :
 			# TODO: Send the selected option to the server
 			# HINT: use sendto()/sendall()
 			if message == str(1):
 				print 'Logout'
-				# TODO: add logout operation
-			if message == str(2):
+				s.sendall('1')
+				s.close()
+				sys.exit()
+
+			# TODO: add logout operation
+			elif message == str(2):
 				print 'Post a message'
+				message = raw_input("Type a message and hit enter: ")
+				print "Sent: " + message
+				s.sendall('2')
+				s.sendall(message)
+				
+
 			# Add other operations, e.g. change password
+			elif message == str(3):
+				old_pwd = getpass("Old Password: ")
+				new_pwd = getpass("New Password: ")
+				s.sendall('3')
+				s.sendall(old_pwd + '<>' + new_pwd)
+					
+				"""
+				# faililng to receive message from server again
+				rcv_msg = s.recv(5)
+				print 'received message from server' + rcv_msg
+				
+				if rcv_msg == "valid":
+					print "Successfully changed password"
+				else:
+					print "Incorrect old password, No changes were made"
+				"""
+
 		except socket.error:
 			print 'Send failed'
 			sys.exit()
